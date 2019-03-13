@@ -1,0 +1,147 @@
+Linux:
+	User: linux
+	Parola: linux
+	User: nicu
+	Parola: nicu
+Windows 10: Domain: alex.local PC: Windows10user
+	User: Alex
+	Parola: alex
+Windows Server 2012: Domain: alex.local  PC: alex2018
+	User: administrator
+	Parola: Server2012
+	User: user1
+	Parola: Server2012
+	User: user2
+	Parola: Server2012
+	User: user3
+	Parola: Server2012
+
+
+
+Apache2 
+- Install: sudo apt-get update
+	   sudo apt-get install apache2
+- Start: sudo systemctl start apache2.service SAU /etc/init.d/apache2 start SAU sudo service apache2 start
+- Stop: sudo systemctl stop apache2.service SAU /etc/init.d/apache2 stop SAU sudo service apache2 stop
+- Restart: sudo systemctl restart apache2.service SAU /etc/init.d/apache2 restart SAU sudo service apache2 restart
+- Reload: sudo service apache2 reload
+- Status stop/start: journalctl -u apache2
+- Status: sudo systemctl status apache2.service
+
+etc/hosts -> se trece ip-ul pc-ului cu numele site-ului 192.168.3.108 alex3y.ro
+var/www/alex3y.ro/index.html -> locul unde se afla index-ul paginii web: 
+etc/apache2/sites-available/alex3y.ro.conf -> se configureaza virtual-host
+a2ensite alex3y.ro -> se activeaza site-ul
+
+Sendmail
+- Install: sudo apt-get update
+	   sudo apt-get install sendmail
+- Configure:
+	- intra in etc/hosts ->
+	- intra in etc/mail/sendmail.mc -> scrie cuvantul: dnl -> in fata DAEMON_OPTIONS('Family=inet, .., Port=smtp, Addr=127.0.0.1)dnl
+					-> scrie cuvantul: dnl -> in fata DAEMON_OPTIONS('Family=inet, .., Port=submission, Addr=127.0.0.1)dnl
+	- sudo sendmailconfig
+	- pt a avea un administrator de mail-uri: sudo apt-get install alpine
+	sau cu sendmail brut
+	- echo "Subject: Test" | sendmail nicu@alex3y.ro -> trimite mail cu subiectul Test catre nicu@alex3y.ro
+	- pt a verifica daca s-a primit mail-ul: mailq
+	- etc/hosts si /etc/hostname numele de domeniu sa fie acelasi 127.0.1.1 alex.local
+
+Samba
+- Install: sudo apt-get update
+	   sudo apt-get install samba
+- Locatie samba: whereis samba
+- Configurare: 
+	-> sudo nano etc/samba/smb.conf
+	-> La finalul fisierului se introduce: 
+			[sambashare]
+    			comment = Samba on Ubuntu
+    			path = /home/username/sambashare
+    			read only = no
+    			browsable = yes
+- Restart: sudo service smbd restart
+- Setare parola user(logat in Linux): sudo smbpasswd -a <username>
+
+Configurare personala samba:
+[AlexShare]
+path = /home/username/alexshare
+writeable = yes  -> permite actiunea stergere/creare/modficare
+browsable = yes  -> permite aparitia folderului share-uit
+createmask = 744
+force create mode = 733
+guest ok = yes
+
+[NicuShare]
+path = /home/username/nicushare
+read only = yes
+browsable = yes
+createmask = 044    -> default e 744, si pun 044 ca sa elimin drepturile rwx, adica 7
+force create mode = 400 -> pun 400 ca sa completez pe user doar cu dreptul 4(read)
+guest ok = yes  -> nu cere parola, log anonymous
+
+IPTABLES
+- este deja instalat
+Configurare:    - Verificare ce porturi sunt deschise: iptables -L ->(implicit nu are nimic scris si totul e pe ACCEPT)
+		- scriere deschidere porturi pe Input: iptables -A INPUT -p tcp --dport ssh -j ACCEPT -> trimitere trafic pe ssh(portul 22)
+		- scriere deschidere porturi pe Output: iptables -A OUTPUT -p tcp --dport ssh -j ACCEPT -> acceptare trafic pe ssh(portul 22)
+		- introducere port pe o anume linie in INPUT: iptables -I INPUT 1 -p tcp --dport 443 -j ACCEPT
+		- blocare port anume pe Input: iptables -A INPUT -p tcp --dport ssh -j DROP
+		- blocare totala pe INPUT: iptables -A INPUT -j DROP
+		- vizualizare reguli, pe linii: iptables -L --line-numbers
+		- stergere regula port din INPUT: iptables -D INPUT 5 -> se sterge regula din Input de pe linia 5
+- Salvare setari: iptables-save
+SAU
+- Salvare setari in fisier(dupa executia lui iptables-save): sudo sh -c "iptables-save > /etc/iptables.rules"
+- Instaurare setari facute in fisier: sudo iptables-restore < /etc/iptables.rules
+NOTA: - Se vor bloca porturile modificand politicile: sudo iptables -P INPUT DROP
+      - Se va lasa ACCEPT pe OUTPUT deoarece nu se stie pe ce port se intoarce raspunsul de la server
+	
+OpenSSH
+- Install: sudo apt-get update
+	   sudo apt-get install openssh-server
+- configurare: sudo gedit /etc/ssh/sshd_config& SAU sudo nano /etc/ssh/sshd_config
+- restart: sudo ssh restart SAU systemctl restart ssh
+
+FTP
+- Install: sudo apt install vsftpd
+- Restart: systemctl restart vsftpd
+- configure: /etc/vsftpd.conf -> se debifeaza de la commentarii(se sterge # din fata):
+	- write_enable = YES -> pentru a putea avea drept de scriere (a primi fisiere)
+	- local_umask=022 -> pentru a putea folosi portul 022 pt ftp, default e 077
+Pt. transfer fisier: 
+open 192.168.0.104
+User: linux
+Pass: linux
+lcd -> C:/Windows/System32
+lcd ../../..
+lcd Users/Alex/Desktop
+send -> pt trimitere de fisiere -> trimitem fisierul Nicu.txt de pe Desktop Windows in /home/linux(director implicit)
+
+
+WINDOWS SERVER
+
+DNS
+Reverse Primary DNS zone -> http://www.tomshardware.co.uk/faq/id-1954333/create-reverse-primary-dns-zone-windows-server-2012.html
+
+ACTIVE DIRECTORY
+https://www.youtube.com/watch?v=w8LRLkdWwc4
+https://www.youtube.com/watch?v=yZ6Te5TDvhg
+
+Am dat pe Tools > am mers in alex.local > am dat click-dreapta pe alex.local > am dat new -> Organisation Unit (l-am denumit SO2018)
+Am mers in SO2018 > am dat click dreapta pe SO2018 > am mers pe New -> User (am completat campurile -> l-am denumit user1)
+In windows 10 am setat domeniul alex.local, m-am logat cu un user valid din server ce avea acces la domeniu(administrator sau user1 ), dupa care am dat restart
+la Login am selectat Other User -> m-am logat cu user1
+
+IIS
+-instalare din add roles and fetures si testare prin navigarea pe http://localhost/
+
+FILE SHARING
+- e prestabilit instalat
+- ca sa share-uim creem un fisier pe desktop -> click dreapta-> Properties-> Sharing-> Advanced Sharing-> se seteaza drepturile-> Apply si OK
+
+FIREWALL
+https://blogs.technet.microsoft.com/danstolts/2010/03/allow-remote-desktop-services-and-ping-through-firewall-on-windows-server-2008-r2-or-windows-7/
+
+- daca pui userul in grupul Domain Admins nu iti va mai cere credetialele administratorului
+- in Acitve Directory Users and.. se va crea un nou Organizational Unit(denumit useri so2018) in care se vor baga userii nostri si de asemenea se va crea un grup useri so2018, unde ii vom vom face membrii pe cei 3 useri
+- In Group Policy Management vom crea un Group Policy Object(GPO)(click dreapta pe useri so2018->create a GPO), dupa click dreapta pe fisier si Edit(aici setam toate restrictiile pt userii din acel Organizational Unit)

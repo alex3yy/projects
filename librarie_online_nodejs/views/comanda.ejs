@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<script>
+
+function calculTotal() {
+  let itemTotal = 0;
+  let tax = 0;
+  let totalWithTax = 0;
+  let val = document.getElementById("num");
+  let tot = document.getElementById("tot");
+  let cells = document.getElementsByTagName("td");
+  
+  valTotal = val.value*<%=carte.pret%>;
+  tax=valTotal*0.19;
+  totalWithTax=valTotal+tax;
+  
+
+  cells[7].innerHTML = valTotal+" lei";
+  tot.value = totalWithTax + " lei"; 
+}
+</script>
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="/f/bookstyle.css">
+</head>
+<body>
+<h1>Welcome to Alex's Library!</h1>
+<div class="navbar">
+  <a href="/">Home</a>
+  <a href="/livrare">Detalii livrare</a>
+  <a href="/contact">Contact</a>
+</div>
+
+<div class="main" align="center">
+<div class="main" align="left">
+<h2><i>Plasare comanda</i></h2>
+</div>
+<table border="1" cellspacing="0" cellpadding="4">
+<tr bgcolor="#F9F1E7">
+	<td><b>Nr buc</b></td>
+	<td><b>Carte</b></td>
+	<td><b>Preţ</b></td>
+	<td><b>Total</b></td>
+</tr>
+<form action="/sumar/<%=carte.id%>" method="GET">
+<tr><td><input id="num" type="number" name="buc" maxlength="1000" min="0" max="1000" value="1"></td>
+			<td><b><%=carte.nume%></b> de <%=carte.autor%></td>
+			<td align="right"><%=carte.pret%> lei</td>
+			<td align="right"><%=carte.pret%> lei</td>
+			</tr>
+<tr><td align="right" colspan="3"><b>Total in cos(cu TVA)</b></td>
+		<td align="right"><b></b> <input id="tot" type="text" name="total" value="0 lei" readonly> </td></tr></table>
+		<input type="submit" value="Plaseaza comanda!">
+</form>
+<button onclick="calculTotal()">Update cos</button>
+</div>
+<p align="center"> <a href ="/">&copy; Alex's Library </a></p>

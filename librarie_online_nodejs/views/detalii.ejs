@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="/f/bookstyle.css">
+</head>
+<body>
+<h1>Welcome to Alex's Library!</h1>
+<div class="navbar">
+  <a href="/">Home</a>
+  <a href="/livrare">Detalii livrare</a>
+  <a href="/contact">Contact</a>
+</div>
+
+<div class="main" align="center">
+<h3><i>Detalii despre cartea selectata: <b><%=carte.nume %></b></i></h3>
+
+	<img src="/<%=carte.imagine%>" width="75" height="100"><br>
+    <p>Titlu:<b> <%=carte.nume %></b> </p>
+    <p>Autor: <strong> <%=carte.autor %></strong></p>
+    <p>An: <%=carte.an %></p>
+	<p>Gen:
+	
+      <% carte.gen.forEach(function(item){ %>
+      <%=item %>,
+      <% }) %>
+	</p>
+	  
+    
+	<p>Pret: <i><%=carte.pret%> lei</i></p>
+
+			<table>
+			<tr><td width="200" align="center">
+
+			<a href="/" ><img src="/f/back_to_shop.jpg" height="150px" width="150px"><br>Inapoi la site</a></td>
+			<td width="200" align="center">
+			<a href="/comanda/<%=carte.id%>"><img src="/f/checkout.jpg" height="150px" width="150px"><br>Mergi la casă</a>
+			</td>
+			</tr>
+			</table>
+</div>
+</body>
+</html><p align="center"> <a href ="/">&copy; Alex's Library </a></p>
